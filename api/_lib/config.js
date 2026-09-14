@@ -4,8 +4,8 @@ export const MAX = 200;
 export const PRICE_ONE = 6000;
 export const PRICE_TWO = 10000;
 export const MAX_PER_ORDER = 10;
-export const MP_RESERVE_MIN = 20; // reserva mientras se paga con Mercado Pago
 export const TRANSFER_RESERVE_MIN = 12 * 60; // reserva hasta que Silvana verifique la transferencia
+export const RESERVE_HOLD_MIN = 24 * 60; // reserva sin pago inmediato, para bloquear el número
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

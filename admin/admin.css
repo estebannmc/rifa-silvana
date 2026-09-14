@@ -67,7 +67,7 @@
   font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   background: rgba(201, 211, 191, .75); color: var(--green-deep);
 }
-.badge--mercadopago { background: rgba(227, 167, 150, .45); color: var(--terra-deep); }
+.badge--reserva { background: rgba(227, 167, 150, .45); color: var(--terra-deep); }
 .badge--manual { background: rgba(242, 211, 191, .85); color: #6f4f22; }
 
 .btn-danger {

@@ -21,17 +21,17 @@
   const RANGES = { all: [0, 200], a: [0, 49], b: [50, 99], c: [100, 149], d: [150, 200] };
 
   const METHOD_UI = {
-    mercadopago: {
-      title: 'Pagás con Mercado Pago',
-      submit: 'Ir a Mercado Pago',
-      busy: 'Abriendo Mercado Pago…',
-      note: 'Te llevamos a Mercado Pago para pagar con tarjeta, débito o dinero en cuenta. Cuando termines, volvés acá automáticamente.',
-    },
     transferencia: {
       title: 'Pagás por transferencia',
       submit: 'Ver datos para transferir',
       busy: 'Reservando tus números…',
       note: 'Tus números quedan reservados 12 h a tu nombre hasta que Sil confirme la transferencia.',
+    },
+    reserva: {
+      title: 'Reservás tu número',
+      submit: 'Reservar 24 horas',
+      busy: 'Reservando tu número…',
+      note: 'Tu número queda bloqueado 24 h a tu nombre. Avisale a Sil y transferí dentro de ese plazo para confirmarlo.',
     },
   };
 
@@ -41,7 +41,6 @@
   const money = (n) => '$' + Number(n).toLocaleString('es-AR');
   const priceFor = (n) => Math.floor(n / 2) * CONFIG.PRICE_TWO + (n % 2) * CONFIG.PRICE_ONE;
   const sortNum = (a, b) => a - b;
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const params = new URLSearchParams(location.search);
   const waLink = (text) => `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(text)}`;
@@ -54,23 +53,14 @@
     set(key, value) {
       try { localStorage.setItem('rifa:' + key, JSON.stringify(value)); } catch { /* sin storage */ }
     },
-    del(key) {
-      try { localStorage.removeItem('rifa:' + key); } catch { /* sin storage */ }
-    },
-  };
-  const getPending = () => {
-    const p = store.get('pending');
-    if (!p || !p.until || p.until < Date.now()) return null;
-    return p;
   };
 
   const state = {
     sold: new Set(),
     reserved: new Set(),
-    mine: new Set(), // números reservados por una orden propia de MP todavía pendiente
     selected: new Set(),
     range: 'all',
-    method: 'mercadopago',
+    method: 'transferencia',
     demo: params.has('demo'),
     loaded: false,
     sheetOpen: false,
@@ -98,7 +88,7 @@
 
   function statusOf(n) {
     if (state.sold.has(n)) return 'sold';
-    if (state.reserved.has(n) && !state.mine.has(n)) return 'reserved';
+    if (state.reserved.has(n)) return 'reserved';
     return 'free';
   }
 
@@ -259,8 +249,6 @@
   }
 
   function applyNumbers({ sold = [], reserved = [] }) {
-    const pending = getPending();
-    state.mine = new Set(pending && pending.method === 'mercadopago' ? pending.numbers : []);
     state.sold = new Set(sold);
     state.reserved = new Set(reserved.filter((n) => !state.sold.has(n)));
     const lost = [...state.selected].filter((n) => statusOf(n) !== 'free');
@@ -386,7 +374,6 @@
     $('#formTitle').textContent = ui.title;
     $('#formSubmitLabel').textContent = ui.submit;
     $('#formNote').textContent = ui.note;
-    $('#formSecure').hidden = method !== 'mercadopago';
     setStep('form');
     $('#formTitle').focus({ preventScroll: true });
   }
@@ -441,13 +428,11 @@
 
     const btn = $('#formSubmit');
     setBusy(btn, true, METHOD_UI[method].busy);
-    let redirecting = false;
     try {
-      const pending = getPending();
       const r = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ numbers, ...buyer, method, replaceOrder: pending?.orderId }),
+        body: JSON.stringify({ numbers, ...buyer, method }),
       });
       const data = await r.json().catch(() => ({}));
 
@@ -470,25 +455,12 @@
       }
       if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
 
-      if (method === 'mercadopago') {
-        if (!data.init_point) throw new Error('sin_init_point');
-        store.set('pending', {
-          orderId: data.orderId, numbers, method, amount: data.amount, ...buyer,
-          until: Date.now() + 20 * 60 * 1000,
-        });
-        redirecting = true;
-        location.href = data.init_point; // en el celular abre la app de Mercado Pago si está instalada
-        return;
-      }
-
-      showTransfer({ orderId: data.orderId, numbers, amount: data.amount || priceFor(numbers.length), ...buyer });
+      showTransfer({ orderId: data.orderId, numbers, amount: data.amount || priceFor(numbers.length), method, ...buyer });
     } catch (err) {
       console.error('[rifa] checkout', err);
-      formError(method === 'mercadopago'
-        ? 'No pudimos conectar con Mercado Pago. Probá de nuevo o elegí transferencia.'
-        : 'No pudimos reservar tus números. Probá de nuevo en un ratito.');
+      formError('No pudimos reservar tus números. Probá de nuevo en un ratito.');
     } finally {
-      if (!redirecting) setBusy(btn, false);
+      setBusy(btn, false);
     }
   }
 
@@ -497,7 +469,7 @@
     checkout();
   });
 
-  // paso 3 → datos para transferir
+  // paso 3 → datos para transferir o confirmación de reserva
   function showTransfer(t) {
     t.numbers.forEach((n) => { state.selected.delete(n); state.reserved.add(n); });
     saveSelection();
@@ -505,10 +477,23 @@
     fillSheet(t.numbers, { locked: true });
     $('#transferAmount').textContent = money(t.amount);
     const label = t.numbers.length === 1 ? 'el número' : 'los números';
-    const msg = `¡Hola Sil! Soy ${t.nombre}. Te transferí ${money(t.amount)} por ${label} ${t.numbers.map(pad).join(', ')} de la rifa 🎟️ Te mando la captura 👇`;
+    const nums = t.numbers.map(pad).join(', ');
+    const isReserva = t.method === 'reserva';
+    $('#transferTitle').textContent = isReserva ? '¡Tu reserva quedó lista! 🎟️' : '¡Tus números quedaron reservados! 🎟️';
+    $('#transferLead').textContent = isReserva ? 'Tenés 24 h para transferir' : 'Transferí';
+    $('#transferNote').textContent = isReserva
+      ? 'Avisale a Sil que reservaste y mandale la captura cuando hagas la transferencia.'
+      : 'Mandale a Sil la captura de pantalla cuando hayas hecho la transferencia.';
+    $('#transferFineprint').textContent = isReserva
+      ? 'Quedan reservados 24 h a tu nombre. Pasado ese tiempo, se liberan solos.'
+      : 'Quedan reservados 12 h a tu nombre hasta que Sil confirme la transferencia.';
+    const msg = isReserva
+      ? `¡Hola Sil! Soy ${t.nombre}. Reservé ${label} ${nums} de la rifa 🎟️ Te transfiero ${money(t.amount)} dentro de las próximas 24 h.`
+      : `¡Hola Sil! Soy ${t.nombre}. Te transferí ${money(t.amount)} por ${label} ${nums} de la rifa 🎟️ Te mando la captura 👇`;
     $('#waBtn').href = waLink(msg);
     setStep('transfer');
     $('#transferTitle').focus({ preventScroll: true });
+    confetti();
   }
 
   $('#transferDone').addEventListener('click', closeSheet);
@@ -539,139 +524,9 @@
     });
   });
 
-  // ---------- modal de resultado ----------
-  const modal = $('#resultModal');
-
-  function showResult({ kind, title, text, details = [], numbers = [], actions = [], spinner = false }) {
-    const icon = $('#resultIcon');
-    icon.dataset.kind = kind;
-    icon.innerHTML = spinner ? '<span class="spinner"></span>' : kind === 'ok' ? '✓' : kind === 'error' ? '!' : '⏳';
-    $('#resultTitle').textContent = title;
-    $('#resultText').textContent = text;
-    $('#resultReceipt').replaceChildren(...details.filter(([, v]) => v).map(([label, value]) => {
-      const row = document.createElement('div');
-      const dt = document.createElement('dt');
-      const dd = document.createElement('dd');
-      dt.textContent = label;
-      dd.textContent = value;
-      row.append(dt, dd);
-      return row;
-    }));
-    $('#resultChips').replaceChildren(...numbers.map((n) => {
-      const c = document.createElement('span');
-      c.className = 'nchip nchip--static';
-      c.textContent = pad(n);
-      return c;
-    }));
-    $('#resultActions').replaceChildren(...actions.map((a) => {
-      const el = document.createElement(a.href ? 'a' : 'button');
-      el.className = `btn btn-block ${a.variant || 'btn-primary'}`;
-      el.textContent = a.label;
-      if (a.href) { el.href = a.href; el.target = '_blank'; el.rel = 'noopener'; }
-      else el.type = 'button';
-      el.addEventListener('click', () => { if (a.close) closeResult(); a.onClick?.(); });
-      return el;
-    }));
-    if (modal.hidden) {
-      modal.hidden = false;
-      requestAnimationFrame(() => modal.classList.add('is-open'));
-      lockScroll(true);
-    }
-    setTimeout(() => $('#resultTitle').focus({ preventScroll: true }), 60);
-  }
-
-  function closeResult() {
-    modal.classList.remove('is-open');
-    setTimeout(() => { modal.hidden = true; }, 300);
-    if (!state.sheetOpen) lockScroll(false);
-  }
-
-  modal.addEventListener('click', (e) => { if (e.target === modal && !$('#resultIcon .spinner')) closeResult(); });
-
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    if (!modal.hidden && !$('#resultIcon .spinner')) closeResult();
-    else if (state.sheetOpen) closeSheet();
+    if (e.key === 'Escape' && state.sheetOpen) closeSheet();
   });
-
-  // ---------- vuelta desde Mercado Pago ----------
-  async function pollOrder(id, paymentId) {
-    let last = null;
-    for (let i = 0; i < 8; i++) {
-      try {
-        const qs = new URLSearchParams({ id });
-        if (paymentId) qs.set('payment_id', paymentId);
-        const r = await fetch(`/api/order?${qs}`, { cache: 'no-store' });
-        if (r.ok) {
-          last = await r.json();
-          if (last.status === 'paid') return last;
-        }
-      } catch { /* reintento */ }
-      await sleep(2500);
-    }
-    return last;
-  }
-
-  async function handleReturn() {
-    const pago = params.get('pago');
-    if (!pago) return;
-    const pending = getPending();
-    const orderId = params.get('external_reference') || pending?.orderId;
-    const paymentId = params.get('payment_id') || params.get('collection_id');
-    const status = params.get('status') || params.get('collection_status');
-    history.replaceState(null, '', location.pathname + location.hash);
-
-    if (pago === 'ok' || status === 'approved') {
-      showResult({ kind: 'wait', title: 'Confirmando tu pago…', text: 'Esto tarda unos segundos, no cierres esta página.', spinner: true });
-      const order = orderId ? await pollOrder(orderId, paymentId) : null;
-      if (order?.status === 'paid') {
-        store.del('pending');
-        state.selected.clear();
-        saveSelection();
-        await loadNumbers();
-        const nums = order.numbers || pending?.numbers || [];
-        showResult({
-          kind: 'ok',
-          title: '¡Pago aprobado! 🎉',
-          text: 'Gracias por bancar este proyecto ❤️ Estos son los datos de tu compra:',
-          details: [
-            ['Nombre y apellido', order.nombre || pending?.nombre],
-            ['Teléfono', order.telefono || pending?.telefono],
-            [nums.length === 1 ? 'Número' : 'Números', nums.map(pad).join(', ')],
-            ['Importe', money(order.amount ?? priceFor(nums.length))],
-          ],
-          actions: [{ label: 'Volver a la rifa', close: true }],
-        });
-        confetti();
-      } else {
-        showResult({
-          kind: 'wait',
-          title: 'Tu pago se está acreditando',
-          text: 'Mercado Pago todavía no lo confirmó. Apenas se acredite, tus números quedan a tu nombre automáticamente.',
-          numbers: order?.numbers || pending?.numbers || [],
-          actions: [{ label: 'Entendido', close: true }],
-        });
-      }
-    } else if (pago === 'pendiente') {
-      showResult({
-        kind: 'wait',
-        title: 'Pago pendiente',
-        text: 'Mercado Pago está procesando tu pago. Cuando se apruebe, tus números quedan confirmados automáticamente.',
-        numbers: pending?.numbers || [],
-        actions: [{ label: 'Entendido', close: true }],
-      });
-    } else {
-      showResult({
-        kind: 'error',
-        title: 'El pago no se completó',
-        text: 'No se hizo ningún cobro. Tus números siguen seleccionados: podés intentarlo de nuevo.',
-        actions: [
-          { label: 'Reintentar', close: true, onClick: () => { openSheet(); if (state.sheetOpen) chooseMethod('mercadopago'); } },
-          { label: 'Cerrar', close: true, variant: 'btn-glass' },
-        ],
-      });
-    }
-  }
 
   // ---------- toast ----------
   const toastEl = $('#toast');
@@ -772,7 +627,7 @@
     document.fonts?.ready.then(moveThumb);
     addEventListener('resize', moveThumb);
 
-    loadNumbers().then(handleReturn);
+    loadNumbers();
     setInterval(() => { if (!document.hidden && !state.sheetOpen) loadNumbers(); }, CONFIG.REFRESH_MS);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) loadNumbers(); });
   }

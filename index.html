@@ -143,7 +143,7 @@
       <h2 class="h2" id="como-title">En 3 pasos</h2>
       <ol class="steps glass" data-reveal>
         <li><span>1</span><div><b>Elegí tus números</b> en la grilla. Podés tocar varios.</div></li>
-        <li><span>2</span><div><b>Pagá con Mercado Pago</b> (tarjeta, dinero en cuenta) o por transferencia.</div></li>
+        <li><span>2</span><div><b>Pagá por transferencia</b> o reservá tu número por 24 h para pagarlo después.</div></li>
         <li><span>3</span><div><b>¡Listo!</b> Tus números quedan a tu nombre y se bloquean en la grilla.</div></li>
       </ol>
     </section>
@@ -211,7 +211,6 @@
 
   <!-- Íconos del flujo de compra -->
   <svg class="defs" aria-hidden="true" focusable="false">
-    <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></g></symbol>
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></g></symbol>
@@ -235,14 +234,14 @@
     <div class="step step--method">
       <p class="step__q">¿Cómo vas a pagar?</p>
       <div class="pay-options">
-        <button type="button" class="pay-option" data-method="mercadopago">
-          <span class="pay-option__icon pay-option__icon--mp"><svg aria-hidden="true"><use href="#i-card"/></svg></span>
-          <span class="pay-option__text"><b>Mercado Pago</b><small>Tarjeta, débito o dinero en cuenta</small></span>
-          <svg class="pay-option__chev" aria-hidden="true"><use href="#i-chev"/></svg>
-        </button>
         <button type="button" class="pay-option" data-method="transferencia">
           <span class="pay-option__icon pay-option__icon--tr"><svg aria-hidden="true"><use href="#i-bank"/></svg></span>
           <span class="pay-option__text"><b>Transferencia</b><small>Banco Santander · CBU o alias</small></span>
+          <svg class="pay-option__chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <button type="button" class="pay-option" data-method="reserva">
+          <span class="pay-option__icon pay-option__icon--res"><svg aria-hidden="true"><use href="#i-lock"/></svg></span>
+          <span class="pay-option__text"><b>Reservar 24 horas</b><small>Bloqueás el número y pagás después</small></span>
           <svg class="pay-option__chev" aria-hidden="true"><use href="#i-chev"/></svg>
         </button>
       </div>
@@ -251,7 +250,7 @@
     <!-- Paso 2: datos de quien compra -->
     <form class="step step--form" id="buyForm" novalidate>
       <button type="button" class="step__back" id="stepBack"><svg aria-hidden="true"><use href="#i-back"/></svg>Cambiar medio de pago</button>
-      <p class="step__q" id="formTitle" tabindex="-1">Pagás con Mercado Pago</p>
+      <p class="step__q" id="formTitle" tabindex="-1">Pagás por transferencia</p>
       <label class="field">
         <span>Nombre y apellido</span>
         <input id="fNombre" name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Ej: Ana Pérez">
@@ -261,15 +260,14 @@
         <input id="fTel" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="Ej: 342 555-1234">
       </label>
       <p class="form-error" id="formError" role="alert"></p>
-      <button type="submit" class="btn btn-primary btn-block" id="formSubmit"><span id="formSubmitLabel">Ir a Mercado Pago</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+      <button type="submit" class="btn btn-primary btn-block" id="formSubmit"><span id="formSubmitLabel">Ver datos para transferir</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
       <p class="fineprint" id="formNote"></p>
-      <p class="fineprint secure" id="formSecure"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>El pago se procesa en Mercado Pago. Nunca vemos los datos de tu tarjeta.</p>
     </form>
 
-    <!-- Paso 3: datos para transferir -->
+    <!-- Paso 3: datos para transferir / reservar -->
     <div class="step step--transfer">
       <p class="step__q" id="transferTitle" tabindex="-1">¡Tus números quedaron reservados! 🎟️</p>
-      <p class="step__text">Transferí <strong id="transferAmount">$0</strong> a esta cuenta:</p>
+      <p class="step__text"><span id="transferLead">Transferí</span> <strong id="transferAmount">$0</strong> a esta cuenta:</p>
       <div class="copy-row"><div><small>Titular</small><span id="holderText"></span></div></div>
       <div class="copy-row"><div><small>Banco</small><span id="bankText"></span></div></div>
       <div class="copy-row">
@@ -280,24 +278,12 @@
         <div><small>Alias</small><code id="aliasText"></code></div>
         <button type="button" class="copy-btn" data-copy="alias" aria-label="Copiar alias">Copiar</button>
       </div>
-      <p class="transfer-note"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg><span>Mandale a Sil la captura de pantalla cuando hayas hecho la transferencia.</span></p>
+      <p class="transfer-note"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg><span id="transferNote">Mandale a Sil la captura de pantalla cuando hayas hecho la transferencia.</span></p>
       <a class="btn btn-green btn-block" id="waBtn" href="#" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg>Mandar captura a Sil</a>
       <button type="button" class="btn btn-glass btn-block" id="transferDone">Listo</button>
-      <p class="fineprint center">Quedan reservados 12 h a tu nombre hasta que Sil confirme la transferencia.</p>
+      <p class="fineprint center" id="transferFineprint">Quedan reservados 12 h a tu nombre hasta que Sil confirme la transferencia.</p>
     </div>
   </section>
-
-  <!-- Resultado (éxito / pendiente / error) -->
-  <div class="modal" id="resultModal" hidden>
-    <div class="modal__card glass glass--thick" role="dialog" aria-modal="true" aria-labelledby="resultTitle" aria-describedby="resultText">
-      <div class="modal__icon" id="resultIcon" aria-hidden="true"></div>
-      <h2 id="resultTitle" tabindex="-1"></h2>
-      <p id="resultText"></p>
-      <dl class="receipt" id="resultReceipt"></dl>
-      <div class="modal__chips" id="resultChips"></div>
-      <div class="modal__actions" id="resultActions"></div>
-    </div>
-  </div>
 
   <canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
   <div class="toast glass glass--thick" id="toast" role="status" aria-live="polite"></div>

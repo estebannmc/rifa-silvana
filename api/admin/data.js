@@ -28,8 +28,7 @@ export default async function handler(req, res) {
     for (const t of tickets) if (t.status === 'reserved') reservedUntil[t.order_id] = t.reserved_until;
 
     const withUntil = (o) => ({ ...o, reserved_until: reservedUntil[o.id] || null });
-    const pendingTransfers = orders.filter((o) => o.status === 'pending' && o.method === 'transferencia').map(withUntil);
-    const pendingMp = orders.filter((o) => o.status === 'pending' && o.method === 'mercadopago').map(withUntil);
+    const pendingOrders = orders.filter((o) => o.status === 'pending').map(withUntil);
     const sales = orders.filter((o) => o.status === 'paid');
 
     const sold = tickets.filter((t) => t.status === 'sold').map((t) => t.number).sort((a, b) => a - b);
@@ -37,8 +36,7 @@ export default async function handler(req, res) {
     const total = MAX - MIN + 1;
 
     return json(res, 200, {
-      pendingTransfers,
-      pendingMp,
+      pendingOrders,
       sales,
       sold,
       reserved,

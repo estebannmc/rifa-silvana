@@ -15,7 +15,7 @@
   const byNum = (a, b) => a - b;
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const METHOD = { mercadopago: 'Mercado Pago', transferencia: 'Transferencia', manual: 'Por fuera' };
+  const METHOD = { transferencia: 'Transferencia', reserva: 'Reserva 24 h', manual: 'Por fuera' };
 
   const state = { data: null, selected: new Set(), amountDirty: false };
 
@@ -138,13 +138,11 @@
     </article>`;
   }
 
-  const transferCard = (o) => card(o, {
+  const pendingCard = (o) => card(o, {
     meta: `<span>${when(o.created_at)}</span>${timeLeft(o.reserved_until)}`,
     actions: '<button type="button" class="btn btn-green" data-action="confirm">Confirmar pago</button>'
       + '<button type="button" class="btn btn-glass" data-action="release">Liberar</button>',
   });
-
-  const mpCard = (o) => card(o, { meta: `<span>${when(o.created_at)} · pagando…</span>` });
 
   const saleCard = (o) => card(o, {
     meta: `<span>${when(o.paid_at || o.created_at)}</span>`,
@@ -159,16 +157,11 @@
     $('#kFree').textContent = d.stats.free;
     $('#kRaised').textContent = money(d.stats.raised);
 
-    const transfers = [...d.pendingTransfers].reverse(); // las más viejas primero
-    setCount('#trCount', transfers.length);
-    $('#trList').innerHTML = transfers.length
-      ? transfers.map(transferCard).join('')
-      : '<p class="empty">No hay transferencias pendientes.</p>';
-
-    const mp = d.pendingMp || [];
-    $('#mpSection').hidden = mp.length === 0;
-    setCount('#mpCount', mp.length);
-    $('#mpList').innerHTML = mp.map(mpCard).join('');
+    const pending = [...d.pendingOrders].reverse(); // las más viejas primero
+    setCount('#trCount', pending.length);
+    $('#trList').innerHTML = pending.length
+      ? pending.map(pendingCard).join('')
+      : '<p class="empty">No hay pedidos pendientes.</p>';
 
     setCount('#salesCount', d.sales.length);
     $('#salesList').innerHTML = d.sales.length
@@ -180,7 +173,7 @@
 
   function findOrder(id) {
     const d = state.data;
-    return [...d.pendingTransfers, ...(d.pendingMp || []), ...d.sales].find((o) => o.id === id);
+    return [...d.pendingOrders, ...d.sales].find((o) => o.id === id);
   }
 
   // ---------- acciones sobre pedidos ----------

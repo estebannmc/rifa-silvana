@@ -12,10 +12,3 @@ export function readBody(req) {
   }
   return {};
 }
-
-export function siteUrl(req) {
-  const fromEnv = process.env.SITE_URL;
-  if (fromEnv) return fromEnv.replace(/\/+$/, '');
-  const host = req.headers['x-forwarded-host'] || req.headers.host;
-  return `https://${host}`;
-}

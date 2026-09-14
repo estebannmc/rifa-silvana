@@ -10,9 +10,8 @@ create table public.orders (
   telefono      text not null check (char_length(telefono) between 3 and 30),
   numbers       int[] not null check (cardinality(numbers) between 1 and 50),
   amount        int not null check (amount >= 0),
-  method        text not null default 'mercadopago' check (method in ('mercadopago', 'transferencia', 'manual')),
+  method        text not null default 'transferencia' check (method in ('transferencia', 'reserva', 'manual')),
   status        text not null default 'pending' check (status in ('pending', 'paid', 'expired', 'cancelled')),
-  mp_payment_id text,
   notified      boolean not null default false,
   note          text,
   created_at    timestamptz not null default now(),
@@ -133,52 +132,12 @@ exception
     raise exception 'TAKEN:';
 end $$;
 
--- ---------------------------------------------------------------------
--- Confirma un pago aprobado (idempotente). Devuelve conflictos si algún
--- número fue tomado por otra orden mientras la reserva estaba vencida.
--- ---------------------------------------------------------------------
-create or replace function public.confirm_order(p_order uuid, p_payment_id text)
-returns jsonb
-language plpgsql security definer set search_path = public as $$
-declare
-  v_status    text;
-  v_conflicts int[];
-begin
-  select status into v_status from orders where id = p_order for update;
-  if not found then
-    raise exception 'ORDER_NOT_FOUND';
-  end if;
-  if v_status = 'paid' then
-    return jsonb_build_object('already_paid', true, 'conflicts', '[]'::jsonb);
-  end if;
-
-  update orders
-     set status = 'paid', mp_payment_id = coalesce(p_payment_id, mp_payment_id)
-   where id = p_order;
-
-  select array_agg(t.number order by t.number) into v_conflicts
-    from orders o
-    cross join unnest(o.numbers) as n
-    join tickets t on t.number = n
-   where o.id = p_order and t.order_id is distinct from p_order;
-
-  if v_conflicts is not null then
-    update orders
-       set note = 'CONFLICTO: números ya tomados por otra orden: ' || array_to_string(v_conflicts, ', ')
-     where id = p_order;
-  end if;
-
-  return jsonb_build_object('already_paid', false, 'conflicts', coalesce(to_jsonb(v_conflicts), '[]'::jsonb));
-end $$;
-
 revoke all on function public.set_paid_at()                                  from public, anon, authenticated;
 revoke all on function public.sync_order_tickets()                           from public, anon, authenticated;
 revoke all on function public.release_expired()                              from public, anon, authenticated;
 revoke all on function public.reserve_numbers(int[], text, text, int, text, int) from public, anon, authenticated;
-revoke all on function public.confirm_order(uuid, text)                      from public, anon, authenticated;
 grant execute on function public.release_expired()                              to service_role;
 grant execute on function public.reserve_numbers(int[], text, text, int, text, int) to service_role;
-grant execute on function public.confirm_order(uuid, text)                      to service_role;
 
 -- ---------------------------------------------------------------------
 -- Vista cómoda para Silvana (Table Editor). security_invoker => respeta RLS.
