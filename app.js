@@ -609,6 +609,13 @@
     els.forEach((el) => io.observe(el));
   }
 
+  function settleHeroPhoto() {
+    const photo = $('.hero__photo');
+    if (!photo) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => photo.classList.add('is-settled'), reduce ? 0 : 1400);
+  }
+
   // ---------- inicio ----------
   function init() {
     buildGrid();
@@ -624,6 +631,7 @@
     countdown();
     onScroll();
     setupReveal();
+    settleHeroPhoto();
     document.fonts?.ready.then(moveThumb);
     addEventListener('resize', moveThumb);
 
