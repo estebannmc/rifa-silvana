@@ -1,0 +1,93 @@
+/* Panel de Sil · se apoya en /styles.css (tokens, glass, botones, grilla) */
+
+.admin-wrap {
+  max-width: 880px;
+  padding-block: calc(var(--safe-t) + 24px) calc(48px + var(--safe-b));
+}
+
+/* ---------- Ingreso ---------- */
+.login { max-width: 420px; margin: 9vh auto 0; padding: 28px 22px 24px; }
+.login .brand { margin: 0 0 4px; }
+.login__title { margin: 0 0 20px; font: 400 2.2rem/1.05 var(--serif); }
+
+/* ---------- Cabecera y resumen ---------- */
+.admin-head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.admin-title { margin: 0; font: 400 clamp(2rem, 8vw, 2.6rem)/1 var(--serif); }
+.admin-head__actions { display: flex; align-items: center; gap: 8px; }
+.admin-head__actions .icon-btn svg { width: 20px; height: 20px; }
+.admin-head__actions .icon-btn.spin svg { animation: spin .8s linear infinite; }
+
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 28px; }
+.kpi { padding: 14px 16px; border-radius: 20px; }
+.kpi small { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.kpi strong { display: block; margin-top: 2px; font: 400 1.9rem/1.1 var(--serif); color: var(--ink); font-variant-numeric: tabular-nums; }
+.kpi:last-child strong { color: var(--terra-deep); }
+
+/* ---------- Secciones ---------- */
+.admin-section { margin-bottom: 32px; }
+.admin-h {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 6px; font: 400 1.5rem/1.2 var(--serif);
+}
+.admin-section > .fineprint { margin: 0 0 12px; }
+.count {
+  display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 9px;
+  border-radius: 99px; font: 700 .85rem/1 var(--sans); color: #fff; background: var(--terra);
+}
+.count[data-zero] { background: var(--sage-2); }
+
+/* ---------- Tarjetas de pedidos (sin backdrop-filter: pueden ser muchas) ---------- */
+.cards { display: grid; gap: 10px; }
+.ocard {
+  padding: 16px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .7));
+  box-shadow: 0 10px 24px -16px rgba(52, 65, 47, .45), inset 0 1px 0 #fff, inset 0 0 0 1px rgba(74, 90, 72, .1);
+}
+.ocard__top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ocard__name { font-weight: 700; font-size: 1.02rem; overflow-wrap: anywhere; }
+.ocard__amount { flex: none; font: 400 1.4rem/1 var(--serif); color: var(--terra-deep); }
+.ocard__meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px;
+  margin: 8px 0 10px; font-size: .84rem; color: var(--muted);
+}
+.ocard__meta a { color: var(--green-deep); font-weight: 600; text-underline-offset: 3px; }
+.ocard__meta .late { color: var(--terra-deep); font-weight: 700; }
+.ocard__note { margin: -2px 0 10px; font-size: .8rem; color: var(--terra-deep); }
+.ocard__nums { display: flex; flex-wrap: wrap; gap: 6px; }
+.ocard__nums .nchip { min-height: 32px; padding: 0 12px; font-size: .88rem; }
+.ocard__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.ocard__actions--single { grid-template-columns: 1fr; }
+.ocard__actions .btn { min-height: 46px; padding: 0 12px; font-size: .9rem; }
+
+.badge {
+  padding: 4px 9px; border-radius: 99px;
+  font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: rgba(201, 211, 191, .75); color: var(--green-deep);
+}
+.badge--mercadopago { background: rgba(227, 167, 150, .45); color: var(--terra-deep); }
+.badge--manual { background: rgba(242, 211, 191, .85); color: #6f4f22; }
+
+.btn-danger {
+  color: var(--terra-deep);
+  background: rgba(227, 167, 150, .22);
+  box-shadow: inset 0 0 0 1px rgba(154, 74, 56, .25);
+}
+
+.empty {
+  margin: 0; padding: 18px; border-radius: 20px; text-align: center;
+  font-size: .9rem; color: var(--muted);
+  background: rgba(255, 255, 255, .45); box-shadow: inset 0 0 0 1px rgba(74, 90, 72, .1);
+}
+
+/* ---------- Bloqueo manual ---------- */
+.block-form { margin-top: 12px; padding: 16px; border-radius: 22px; }
+.block-sel { margin: 0 0 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+@media (min-width: 700px) {
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+  .block-form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 12px; align-items: end; }
+  .block-form .block-sel, .block-form .form-error, .block-form .btn { grid-column: 1 / -1; }
+}

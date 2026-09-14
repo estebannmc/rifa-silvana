@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F0E8">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel · Rifa a beneficio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="admin">
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></g></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></g></symbol>
+  </svg>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+
+  <main class="wrap admin-wrap">
+    <!-- Ingreso -->
+    <section class="login glass glass--thick" id="loginView">
+      <p class="brand"><span class="brand__serif">Rifa</span><span class="brand__script">a beneficio</span></p>
+      <h1 class="login__title">Panel de Sil</h1>
+      <form id="loginForm" novalidate>
+        <label class="field">
+          <span>Usuario</span>
+          <input id="lUser" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        </label>
+        <label class="field">
+          <span>Contraseña</span>
+          <input id="lPass" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <p class="form-error" id="loginError" role="alert"></p>
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Entrar</button>
+      </form>
+    </section>
+
+    <!-- Panel -->
+    <section id="appView" hidden>
+      <header class="admin-head">
+        <div>
+          <p class="eyebrow">Panel de la rifa</p>
+          <h1 class="admin-title">Hola, Sil</h1>
+        </div>
+        <div class="admin-head__actions">
+          <button type="button" class="icon-btn" id="refreshBtn" aria-label="Actualizar"><svg><use href="#i-refresh"/></svg></button>
+          <button type="button" class="btn btn-glass btn-sm" id="logoutBtn">Salir</button>
+        </div>
+      </header>
+
+      <div class="kpis">
+        <div class="kpi glass glass--thin"><small>Vendidos</small><strong id="kSold">0</strong></div>
+        <div class="kpi glass glass--thin"><small>Reservados</small><strong id="kRes">0</strong></div>
+        <div class="kpi glass glass--thin"><small>Libres</small><strong id="kFree">0</strong></div>
+        <div class="kpi glass glass--thin"><small>Recaudado</small><strong id="kRaised">$0</strong></div>
+      </div>
+
+      <section class="admin-section" aria-labelledby="trTitle">
+        <h2 class="admin-h" id="trTitle">Transferencias por confirmar <span class="count" id="trCount">0</span></h2>
+        <p class="fineprint">Cuando te llegue la captura y veas la plata en la cuenta, tocá <b>Confirmar pago</b>. Si no llega, <b>Liberar</b> deja los números disponibles otra vez.</p>
+        <div class="cards" id="trList"></div>
+      </section>
+
+      <section class="admin-section" id="mpSection" aria-labelledby="mpTitle" hidden>
+        <h2 class="admin-h" id="mpTitle">Pagando ahora con Mercado Pago <span class="count" id="mpCount">0</span></h2>
+        <p class="fineprint">Se confirman solos cuando se aprueba el pago. Si no pagan, se liberan a los 20 minutos.</p>
+        <div class="cards" id="mpList"></div>
+      </section>
+
+      <section class="admin-section" aria-labelledby="blockTitle">
+        <h2 class="admin-h" id="blockTitle">Bloquear números vendidos por fuera</h2>
+        <p class="fineprint">Tocá los números que vendiste en persona o por otro medio. Quedan como vendidos en la web.</p>
+        <div class="grid-panel glass">
+          <div class="grid" id="adminGrid" aria-label="Elegí números para bloquear"></div>
+        </div>
+        <form class="block-form glass" id="blockForm" novalidate>
+          <p class="block-sel" id="blockSel">Tocá los números en la grilla</p>
+          <label class="field">
+            <span>Nombre (opcional)</span>
+            <input id="bNombre" maxlength="80" placeholder="Ej: Marta Gómez">
+          </label>
+          <label class="field">
+            <span>Celular (opcional)</span>
+            <input id="bTel" type="tel" inputmode="tel" maxlength="30" placeholder="Ej: 342 555-1234">
+          </label>
+          <label class="field">
+            <span>Importe cobrado</span>
+            <input id="bAmount" type="number" inputmode="numeric" min="0" step="500" placeholder="0">
+          </label>
+          <p class="form-error" id="blockError" role="alert"></p>
+          <button type="submit" class="btn btn-green btn-block" id="blockBtn" disabled>Bloquear números</button>
+        </form>
+      </section>
+
+      <section class="admin-section" aria-labelledby="salesTitle">
+        <h2 class="admin-h" id="salesTitle">Ventas confirmadas <span class="count" id="salesCount">0</span></h2>
+        <div class="cards" id="salesList"></div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast glass glass--thick" id="toast" role="status" aria-live="polite"></div>
+  <script src="/admin/admin.js" defer></script>
+</body>
+</html>

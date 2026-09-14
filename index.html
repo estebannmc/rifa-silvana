@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F0E8">
+  <title>Rifa a beneficio · Estudios de posgrado</title>
+  <meta name="description" content="Rifa de números a beneficio para financiar un posgrado internacional. Premio: 1 lechón + 2 vinos + 1 torta de hojaldre. Sorteo jueves 8 de octubre por Lotería Nacional.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rifa de números a beneficio 🎟️">
+  <meta property="og:description" content="1 lechón + 2 vinos + 1 torta de hojaldre. Número $6.000 · 2 por $10.000. Sorteo jueves 8 de octubre.">
+  <meta property="og:url" content="https://rifa-silvana.vercel.app/">
+  <meta property="og:image" content="https://rifa-silvana.vercel.app/assets/flyer.jpg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1536">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <!-- Filtros e íconos SVG reutilizables -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Liquid glass: refracción suave, solo sobre la foto del hero -->
+      <filter id="liquid" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.007 0.011" numOctaves="2" seed="4" result="noise">
+          <animate attributeName="baseFrequency" dur="16s" values="0.007 0.011;0.011 0.007;0.007 0.011" repeatCount="indefinite"/>
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+    <symbol id="i-pig" viewBox="0 0 64 48"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 25c0-8.5 8.5-14 19.5-14 7 0 12.6 2.2 16 5.6"/><path d="M47.5 16.6 50 9.5l2.6 9.6c2.3 2 3.6 4.2 3.9 6.6h2.2a2.3 2.3 0 0 1 0 4.6h-2.6c-1.4 4-5 7-10 8.3"/><path d="M12 25c0 6 3.4 10.6 9 13"/><path d="M21 38v6M28 39.5V44M38 39.5V44M45 38.4V44"/><path d="M28.5 39.6c3 .4 6.3.4 9.5 0"/><path d="M12 24.5c-3.8.4-6-1.6-5.2-4.2.6-1.8 2.8-2 3.6-.4"/><circle cx="48.5" cy="23" r="1.3" fill="currentColor" stroke="none"/></g></symbol>
+    <symbol id="i-bottle" viewBox="0 0 20 44"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 2h5v9.5c0 1.4 4.5 3 4.5 8.5v20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V20c0-5.5 4.5-7.1 4.5-8.5z"/><path d="M3 24h14v9H3"/></g></symbol>
+    <symbol id="i-cake" viewBox="0 0 56 44"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18h40v17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2z"/><path d="M8 24c3.3 2 6.7 2 10 0s6.7-2 10 0 6.7 2 10 0 6.7-2 10 0"/><path d="M8 30.5c3.3 2 6.7 2 10 0s6.7-2 10 0 6.7 2 10 0 6.7-2 10 0"/><path d="M11 18c0-4.5 7.6-7 17-7s17 2.5 17 7"/><path d="M4 41h48"/><path d="M20 13.5h.01M28 12.5h.01M36 13.5h.01M24 15.5h.01M32 15.5h.01"/></g></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M7.5 13.5h.01M12 13.5h.01M16.5 13.5h.01M7.5 17h.01M12 17h.01M16.5 17h.01"/></g></symbol>
+    <symbol id="i-leaf" viewBox="0 0 120 120"><g fill="currentColor"><path d="M8 112C34 86 58 62 112 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M30 90c-14-4-20-16-18-30 12 4 20 14 18 30z"/><path d="M30 90c4-14 16-20 30-18-4 12-14 20-30 18z"/><path d="M52 68c-14-4-20-16-18-30 12 4 20 14 18 30z"/><path d="M52 68c4-14 16-20 30-18-4 12-14 20-30 18z"/><path d="M74 46c-12-4-17-14-15-26 10 4 17 12 15 26z"/><path d="M74 46c4-12 14-17 26-15-4 10-12 17-26 15z"/><path d="M96 24c-3-9 0-16 10-20 2 9-1 16-10 20z"/></g></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4.5"/><circle cx="8.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.1" fill="currentColor"/><circle cx="12" cy="12" r="1.1" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.1" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.1" fill="currentColor"/></g></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.4 7.5L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.6z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></g></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 4l9 5.5M4.5 20.5h15M6 10.5v7M10 10.5v7M14 10.5v7M18 10.5v7"/></g></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <!-- Fondo vivo: manchas pastel que el vidrio refracta -->
+  <div class="ambient" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+
+  <header class="topbar" id="topbar">
+    <div class="topbar__inner glass glass--thin">
+      <a class="brand" href="#top" aria-label="Inicio">
+        <span class="brand__serif">Rifa</span><span class="brand__script">a beneficio</span>
+      </a>
+      <a class="btn btn-primary btn-sm" href="#numeros">Elegir número</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero wrap">
+      <svg class="hero__leaf" aria-hidden="true"><use href="#i-leaf"/></svg>
+      <div class="hero__copy" data-reveal>
+        <h1 class="hero__title">Rifa de<br>números <span class="hero__script">a beneficio</span></h1>
+        <p class="pill glass glass--thin hero__pill">Para realizar estudios académicos</p>
+        <p class="hero__lead">Ayudame a cubrir los gastos de un <strong>posgrado internacional</strong> y llevate un premio para compartir en la mesa.</p>
+        <div class="hero__cta">
+          <a class="btn btn-primary" href="#numeros">Elegí tu número</a>
+          <span class="chip glass glass--thin"><svg class="ico"><use href="#i-calendar"/></svg><span data-countdown>Sorteo: jueves 8 de octubre</span></span>
+        </div>
+      </div>
+      <figure class="hero__media glass" data-reveal>
+        <div class="hero__photo" role="img" aria-label="Lechón asado, dos botellas de vino y una torta de hojaldre sobre una mesa"></div>
+        <figcaption class="hero__badge glass glass--thin">
+          <small>Número</small><strong>$6.000</strong>
+        </figcaption>
+        <span class="hero__badge hero__badge--alt glass glass--thin"><small>2 por</small><strong>$10.000</strong></span>
+      </figure>
+    </section>
+
+    <!-- MENSAJE -->
+    <section class="wrap section">
+      <article class="message glass" data-reveal>
+        <div class="message__avatar" aria-hidden="true">S</div>
+        <p class="message__hi">¡Hola! ¿Cómo va? 😊</p>
+        <p>Quería contarles que estoy realizando una rifa a beneficio para poder financiar un <strong>posgrado internacional</strong>, para el cual tuve la oportunidad de recibir <strong>media beca</strong>.</p>
+        <p>Estoy muy contenta por esta posibilidad, pero todavía necesito cubrir algunos gastos que la beca no contempla, así que decidí hacer este beneficio para poder ayudarme con eso.</p>
+        <p class="message__sign">Gracias por acompañarme y bancar este proyecto ❤️</p>
+      </article>
+    </section>
+
+    <!-- PREMIO -->
+    <section class="wrap section" aria-labelledby="premio-title">
+      <p class="eyebrow">El premio</p>
+      <h2 class="h2" id="premio-title">Se sortea</h2>
+      <ul class="prizes" role="list">
+        <li class="prize glass" data-reveal>
+          <span class="prize__icon"><svg viewBox="0 0 64 48"><use href="#i-pig"/></svg></span>
+          <div><h3>1 lechón</h3><p>Listo para la mesa familiar.</p></div>
+        </li>
+        <li class="prize__plus" aria-hidden="true">+</li>
+        <li class="prize glass" data-reveal>
+          <span class="prize__icon prize__icon--bottles"><svg viewBox="0 0 20 44"><use href="#i-bottle"/></svg><svg viewBox="0 0 20 44"><use href="#i-bottle"/></svg></span>
+          <div><h3>2 vinos</h3><p>1 Luigi Bosca y 1 D.V. Catena.</p></div>
+        </li>
+        <li class="prize__plus" aria-hidden="true">+</li>
+        <li class="prize glass" data-reveal>
+          <span class="prize__icon"><svg viewBox="0 0 56 44"><use href="#i-cake"/></svg></span>
+          <div><h3>1 torta de hojaldre</h3><p>El postre para cerrar a lo grande.</p></div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- PRECIOS Y FECHA -->
+    <section class="wrap section" aria-labelledby="precios-title">
+      <h2 class="sr-only" id="precios-title">Precios y fecha del sorteo</h2>
+      <div class="tiles">
+        <div class="tile tile--terra glass" data-reveal>
+          <small>Valor del número</small>
+          <strong>$6.000</strong>
+        </div>
+        <div class="tile tile--sage glass" data-reveal>
+          <small>2 números por</small>
+          <strong>$10.000</strong>
+        </div>
+        <div class="tile tile--date glass" data-reveal>
+          <svg class="tile__cal" aria-hidden="true"><use href="#i-calendar"/></svg>
+          <div>
+            <small>Se sortea el</small>
+            <strong>Jueves 8 de octubre</strong>
+            <span>por Lotería Nacional</span>
+          </div>
+        </div>
+      </div>
+      <p class="rule">Se toman las <b>3 últimas cifras del 1° premio</b> de la Lotería Nacional Nocturna. Si el número es mayor a 200, se pasa al 2° premio, y así sucesivamente hasta que salga un número de la rifa.</p>
+    </section>
+
+    <!-- CÓMO PARTICIPAR -->
+    <section class="wrap section" aria-labelledby="como-title">
+      <p class="eyebrow">Cómo participar</p>
+      <h2 class="h2" id="como-title">En 3 pasos</h2>
+      <ol class="steps glass" data-reveal>
+        <li><span>1</span><div><b>Elegí tus números</b> en la grilla. Podés tocar varios.</div></li>
+        <li><span>2</span><div><b>Pagá con Mercado Pago</b> (tarjeta, dinero en cuenta) o por transferencia.</div></li>
+        <li><span>3</span><div><b>¡Listo!</b> Tus números quedan a tu nombre y se bloquean en la grilla.</div></li>
+      </ol>
+    </section>
+
+    <!-- GRILLA -->
+    <section class="wrap section numbers" id="numeros" aria-labelledby="numeros-title">
+      <p class="eyebrow">Del 00 al 200</p>
+      <h2 class="h2" id="numeros-title">Elegí tu número</h2>
+
+      <div class="stats glass glass--thin">
+        <p><b id="statFree">201</b> disponibles de <span id="statTotal">201</span></p>
+        <div class="stats__bar" aria-hidden="true"><span id="statBar"></span></div>
+        <span class="demo-badge" id="demoBadge" hidden>modo demo</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="seg-scroll">
+          <div class="seg glass glass--thin" id="seg" role="group" aria-label="Filtrar por rango">
+            <span class="seg__thumb" aria-hidden="true"></span>
+            <button type="button" data-range="all" aria-pressed="true">Todos</button>
+            <button type="button" data-range="a" aria-pressed="false">00–49</button>
+            <button type="button" data-range="b" aria-pressed="false">50–99</button>
+            <button type="button" data-range="c" aria-pressed="false">100–149</button>
+            <button type="button" data-range="d" aria-pressed="false">150–200</button>
+          </div>
+        </div>
+        <div class="toolbar__row">
+          <ul class="legend" role="list">
+            <li><i class="dot dot--free"></i>Libre</li>
+            <li><i class="dot dot--sel"></i>Elegido</li>
+            <li><i class="dot dot--res"></i>Reservado</li>
+            <li><i class="dot dot--sold"></i>Vendido</li>
+          </ul>
+          <button type="button" class="btn btn-glass btn-sm" id="randomBtn"><svg class="ico"><use href="#i-dice"/></svg>Al azar</button>
+        </div>
+      </div>
+
+      <div class="grid-panel glass">
+        <div class="grid" id="grid" aria-label="Números de la rifa"></div>
+      </div>
+      <p class="fineprint center">Podés elegir hasta 10 números por compra. Los números reservados se liberan solos si el pago no se completa.</p>
+    </section>
+
+    <footer class="footer wrap">
+      <svg class="footer__leaf" aria-hidden="true"><use href="#i-leaf"/></svg>
+      <p class="footer__thanks">¡Gracias por ser parte!</p>
+      <p class="footer__meta">Rifa a beneficio · Sorteo jueves 8 de octubre de 2026 por Lotería Nacional</p>
+      <a class="btn btn-glass btn-sm" id="footerWa" href="#" target="_blank" rel="noopener"><svg class="ico"><use href="#i-chat"/></svg>¿Dudas? Escribile a Silvana</a>
+    </footer>
+  </main>
+
+  <!-- Dock flotante (tipo tab bar de iOS) -->
+  <div class="dock glass glass--thick" id="dock" aria-hidden="true" inert>
+    <div class="dock__info">
+      <span class="dock__count" id="dockCount">0 números</span>
+      <span class="dock__list" id="dockList"></span>
+      <span class="dock__hint" id="dockHint"></span>
+    </div>
+    <div class="dock__right">
+      <strong class="dock__total" id="dockTotal">$0</strong>
+      <button type="button" class="btn btn-primary btn-sm" id="dockGo">Continuar</button>
+    </div>
+    <span class="sweep" aria-hidden="true"></span>
+  </div>
+
+  <!-- Íconos del flujo de compra -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <symbol id="i-card" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></g></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></g></symbol>
+  </svg>
+
+  <!-- Pop-up de compra: 1) medio de pago → 2) datos → 3) datos para transferir -->
+  <div class="scrim" id="scrim" hidden></div>
+  <section class="sheet glass glass--thick" id="sheet" data-step="method" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true" inert>
+    <div class="sheet__grab" id="sheetGrab" aria-hidden="true"><span class="sheet__handle"></span></div>
+    <header class="sheet__head">
+      <h2 id="sheetTitle" tabindex="-1">Tus números</h2>
+      <button type="button" class="icon-btn" id="sheetClose" aria-label="Cerrar"><svg><use href="#i-close"/></svg></button>
+    </header>
+    <div class="sheet__chips" id="sheetChips"></div>
+    <div class="sheet__sum">
+      <span id="sheetBreakdown"></span>
+      <strong id="sheetTotal">$0</strong>
+    </div>
+
+    <!-- Paso 1: medio de pago -->
+    <div class="step step--method">
+      <p class="step__q">¿Cómo vas a pagar?</p>
+      <div class="pay-options">
+        <button type="button" class="pay-option" data-method="mercadopago">
+          <span class="pay-option__icon pay-option__icon--mp"><svg aria-hidden="true"><use href="#i-card"/></svg></span>
+          <span class="pay-option__text"><b>Mercado Pago</b><small>Tarjeta, débito o dinero en cuenta</small></span>
+          <svg class="pay-option__chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+        <button type="button" class="pay-option" data-method="transferencia">
+          <span class="pay-option__icon pay-option__icon--tr"><svg aria-hidden="true"><use href="#i-bank"/></svg></span>
+          <span class="pay-option__text"><b>Transferencia</b><small>Banco Santander · CBU o alias</small></span>
+          <svg class="pay-option__chev" aria-hidden="true"><use href="#i-chev"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 2: datos de quien compra -->
+    <form class="step step--form" id="buyForm" novalidate>
+      <button type="button" class="step__back" id="stepBack"><svg aria-hidden="true"><use href="#i-back"/></svg>Cambiar medio de pago</button>
+      <p class="step__q" id="formTitle" tabindex="-1">Pagás con Mercado Pago</p>
+      <label class="field">
+        <span>Nombre y apellido</span>
+        <input id="fNombre" name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Ej: Ana Pérez">
+      </label>
+      <label class="field">
+        <span>Celular (WhatsApp)</span>
+        <input id="fTel" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="Ej: 342 555-1234">
+      </label>
+      <p class="form-error" id="formError" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block" id="formSubmit"><span id="formSubmitLabel">Ir a Mercado Pago</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+      <p class="fineprint" id="formNote"></p>
+      <p class="fineprint secure" id="formSecure"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>El pago se procesa en Mercado Pago. Nunca vemos los datos de tu tarjeta.</p>
+    </form>
+
+    <!-- Paso 3: datos para transferir -->
+    <div class="step step--transfer">
+      <p class="step__q" id="transferTitle" tabindex="-1">¡Tus números quedaron reservados! 🎟️</p>
+      <p class="step__text">Transferí <strong id="transferAmount">$0</strong> a esta cuenta:</p>
+      <div class="copy-row"><div><small>Titular</small><span id="holderText"></span></div></div>
+      <div class="copy-row"><div><small>Banco</small><span id="bankText"></span></div></div>
+      <div class="copy-row">
+        <div><small>CBU</small><code id="cbuText"></code></div>
+        <button type="button" class="copy-btn" data-copy="cbu" aria-label="Copiar CBU">Copiar</button>
+      </div>
+      <div class="copy-row">
+        <div><small>Alias</small><code id="aliasText"></code></div>
+        <button type="button" class="copy-btn" data-copy="alias" aria-label="Copiar alias">Copiar</button>
+      </div>
+      <p class="transfer-note"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg><span>Mandale a Sil la captura de pantalla cuando hayas hecho la transferencia.</span></p>
+      <a class="btn btn-green btn-block" id="waBtn" href="#" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg>Mandar captura a Sil</a>
+      <button type="button" class="btn btn-glass btn-block" id="transferDone">Listo</button>
+      <p class="fineprint center">Quedan reservados 12 h a tu nombre hasta que Sil confirme la transferencia.</p>
+    </div>
+  </section>
+
+  <!-- Resultado (éxito / pendiente / error) -->
+  <div class="modal" id="resultModal" hidden>
+    <div class="modal__card glass glass--thick" role="dialog" aria-modal="true" aria-labelledby="resultTitle" aria-describedby="resultText">
+      <div class="modal__icon" id="resultIcon" aria-hidden="true"></div>
+      <h2 id="resultTitle" tabindex="-1"></h2>
+      <p id="resultText"></p>
+      <dl class="receipt" id="resultReceipt"></dl>
+      <div class="modal__chips" id="resultChips"></div>
+      <div class="modal__actions" id="resultActions"></div>
+    </div>
+  </div>
+
+  <canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
+  <div class="toast glass glass--thick" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
