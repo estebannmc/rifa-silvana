@@ -48,10 +48,19 @@ Entrar a <https://vercel.com/estebannmcs-projects/rifa-silvana/settings/environm
 | `ADMIN_PASSWORD` | la contraseña del panel `/admin` | falta |
 | `ADMIN_USER` | *(opcional)* usuario del panel; si no está, es `Silvana` | — |
 
-Después de cargarlas, volver a publicar:
+Después de cargarlas, volver a publicar: Vercel → *Deployments* → el último → **⋯ → Redeploy** (o `npx vercel deploy --prod`).
+
+## Publicar cambios
+
+El proyecto de Vercel está conectado al repo privado [`estebannmc/rifa-silvana`](https://github.com/estebannmc/rifa-silvana):
+
+- cada `git push` a **`main`** publica en producción (<https://rifa-silvana.vercel.app>) automáticamente;
+- cualquier otra rama genera una **vista previa** con su propia URL, sin tocar la web real.
 
 ```bash
-npx vercel deploy --prod
+git add -A
+git commit -m "Descripción del cambio"
+git push
 ```
 
 ## Panel de Silvana (`/admin`)
